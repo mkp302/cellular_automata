@@ -1,13 +1,28 @@
 import pygame
-import pygame_gui
+
+# import pygame_gui
 import sys
+from context import Context
+from scenes.scene_manager import SceneManager
+from scenes.simulation.simulation_scene import SimulationScene
 
 
-class app:
-    def __init__(self):
-        pass
+def main():
+    pygame.init()
+    context = Context()
+    scene_manager = SceneManager(SimulationScene(context))
+    window_size = context.window_size
+    print(window_size)
 
-    def run(self):
+    clock = pygame.time.Clock()
 
-        while True:
-            pass
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        scene_manager.top().render()
+        pygame.display.flip()
+
+
+main()

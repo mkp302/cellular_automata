@@ -1,4 +1,4 @@
-from cell import Cell
+from models.cell import Cell
 
 
 class Grid:

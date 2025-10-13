@@ -1,3 +1,10 @@
 {
-  "screen_size":(1280,720),
+  "window": {
+    "width": 600,
+    "height": 600
+  },
+  "grid": {
+    "min_size": 10,
+    "max_size": 100
+  }
 }
