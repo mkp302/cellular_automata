@@ -1,5 +1,8 @@
 from config import Config
+from scenes.scene_manager import SceneManager
+from scenes.simulation.simulation_scene import SimulationScene
 import pygame
+import xarray
 
 
 class Context:
@@ -17,3 +20,6 @@ class Context:
             "grid-lines": (209, 203, 69),
         }
         self.screen = pygame.display.set_mode(self.window_size, pygame.RESIZABLE)
+        sim_scene = SimulationScene(self)
+        self.scene_manager = SceneManager()
+        self.scene_manager.push(sim_scene)

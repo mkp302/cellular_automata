@@ -3,15 +3,14 @@ import pygame
 # import pygame_gui
 import sys
 from context import Context
-from scenes.scene_manager import SceneManager
 from scenes.simulation.simulation_scene import SimulationScene
 
 
 def main():
     pygame.init()
     context = Context()
-    scene_manager = SceneManager(SimulationScene(context))
-    window_size = context.window_size
+    scene_manager = context.scene_manager
+    window_size = context.screen.get_size()
     print(window_size)
 
     clock = pygame.time.Clock()
@@ -21,6 +20,11 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.VIDEORESIZE:
+                window_size = context.screen.get_size()
+                context.window_size = window_size
+            scene_manager.top().handle(event)
+
         scene_manager.top().render()
         pygame.display.flip()
 

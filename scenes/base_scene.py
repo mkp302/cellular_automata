@@ -1,10 +1,7 @@
 class BaseScene:
 
-    def update(self):
-        pass
+    def update(self): ...
 
-    def render(self):
-        pass
+    def render(self): ...
 
-    def handle(self, event):
-        pass
+    def handle(self, event): ...
