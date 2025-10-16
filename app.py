@@ -24,6 +24,7 @@ def main():
                 window_size = context.screen.get_size()
                 context.window_size = window_size
             scene_manager.top().handle(event)
+            context.ui_manager.process_events(event)
 
         scene_manager.top().render()
         pygame.display.flip()

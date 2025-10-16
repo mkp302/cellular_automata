@@ -1,4 +1,5 @@
 from models.cell import Cell
+import random
 
 
 class Grid:
@@ -37,3 +38,9 @@ class Grid:
         for i, row in enumerate(self.cells[1 : N + 1]):
             for j, col in enumerate(row[1 : N + 1]):
                 ...
+
+    def randomize(self):
+        for i, row in enumerate(self.cells[1 : self.N + 1]):
+            for j, cell in enumerate(row[1 : self.N + 1]):
+                cell.tree_density = random.random()
+                cell.burning = random.randint(0, 3)

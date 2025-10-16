@@ -14,7 +14,7 @@ def update_wind_from_mouse(mouse_pos, arrow_center):
     return angle, angle_to_vector(angle)
 
 
-def draw_wind_arrow(surface, center, angle, length=60, color=(0, 0, 0)):
+def draw_wind_arrow(surface, center, angle, length=100, color=(0, 0, 0)):
 
     x, y = center
     end_x = x + math.cos(angle) * length
@@ -34,9 +34,10 @@ def draw_wind_arrow(surface, center, angle, length=60, color=(0, 0, 0)):
 
 class Sidebar:
 
-    def __init__(self, context, enviroment):
+    def __init__(self, context, enviroment, grid):
         self.context = context
-        self.manager = pygame_gui.UIManager(context.screen.get_size())
+        self.grid = grid
+        self.manager = self.context.ui_manager
         self.compass_img = pygame.image.load("assets/compass.png").convert_alpha()
         self.enviroment = enviroment
         self.dragging_wind = False
@@ -64,6 +65,12 @@ class Sidebar:
         self.compass = pygame.transform.smoothscale(
             self.compass_img, (sidebar_rect.width, sidebar_rect.width)
         )
+        self.compass_rect = pygame.Rect(0, y, sidebar_width, sidebar_width)
+        print("Compass Rect")
+        print(self.compass_rect)
+        print("Center")
+        print(self.compass_rect.center)
+        print(self.compass.get_size())
 
         y += sidebar_rect.width + y_padding
         input_width = sidebar_width // 2
@@ -121,7 +128,7 @@ class Sidebar:
         )
 
         y += label_height + y_padding
-        randomize_button = pygame_gui.elements.UIButton(
+        self.randomize_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((x, y), (sidebar_width, 40)),
             text="Randomize",
             manager=self.manager,
@@ -138,22 +145,28 @@ class Sidebar:
 
         self.manager.draw_ui(self.context.screen)
         self.manager.update(10)
-        self.context.screen.blit(self.compass, (0, sidebar_rect.top + 40))
+        self.context.screen.blit(self.compass, (0, self.compass_rect.top))
         draw_wind_arrow(
             self.context.screen,
-            (sidebar_rect.width // 2, sidebar_rect.width + 40),
+            self.compass_rect.center,
             self.enviroment.wind_angle,
         )
 
     def handle(self, event):
-        return
         if event.type == pygame.MOUSEBUTTONDOWN:
-            self.dragging_wind = True
+            if self.compass_rect.collidepoint(event.pos):
+                self.dragging_wind = True
         elif event.type == pygame.MOUSEBUTTONUP:
             self.dragging_wind = False
+        if event.type == pygame_gui.UI_BUTTON_PRESSED:
+            print(event.ui_element)
+            if event.ui_element == self.randomize_button:
+                self.grid.randomize()
 
         if self.dragging_wind:
             pos = pygame.mouse.get_pos()
             self.enviroment.wind_angle, self.enviroment.wind_speed = (
-                update_wind_from_mouse(pos, (100, 100))
+                update_wind_from_mouse(pos, self.compass_rect.center)
             )
+            self.wind_x_input.set_text(f"{self.enviroment.wind_speed[0]:.2f}")
+            self.wind_y_input.set_text(f"{ self.enviroment.wind_speed[1]:.2f}")

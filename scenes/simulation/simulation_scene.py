@@ -12,10 +12,12 @@ class SimulationScene(BaseScene):
     def __init__(self, context):
         self.context = context
         self.grid = Grid(17, 5, 10)
-        self.manager = pygame_gui.UIManager(context.screen.get_size())
         self.enviroment = Enviroment()
         self.dragging_wind = False
-        self.sidebar = Sidebar(self.context, self.enviroment)
+        self.sidebar = Sidebar(self.context, self.enviroment, self.grid)
+        self.tree_img = pygame.image.load("assets/tree.png").convert_alpha()
+        self.tree_img_2 = pygame.image.load("assets/2tree.png").convert_alpha()
+        self.tree_img_3 = pygame.image.load("assets/3tree.png").convert_alpha()
 
     def draw_grid(self):
         outer_padding = 5
@@ -78,9 +80,19 @@ class SimulationScene(BaseScene):
                 self.draw_cell(self.grid.cells[row + 1][col + 1], x, y, s)
 
     def draw_cell(self, cell, x, y, s):
+        surface = self.context.screen
         pygame.draw.rect(
             self.context.screen, self.context.palette["cell_bg"], (x, y, s, s)
         )
+        if cell.tree_density > 0.75:
+            tree_scaled = pygame.transform.smoothscale(self.tree_img, (s, s))
+            surface.blit(tree_scaled, (x, y))
+        elif cell.tree_density > 0.50:
+            tree_scaled_2 = pygame.transform.smoothscale(self.tree_img_2, (s, s))
+            surface.blit(tree_scaled_2, (x, y))
+        elif cell.tree_density > 0.25:
+            tree_scaled_3 = pygame.transform.smoothscale(self.tree_img_3, (s, s))
+            surface.blit(tree_scaled_3, (x, y))
 
     def render(self):
         self.draw_grid()
