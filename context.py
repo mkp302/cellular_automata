@@ -13,8 +13,7 @@ class Context:
         width = self.config.get("window", "width", default=800)
         height = self.config.get("window", "height", default=800)
         self.window_size = (width, height)
-        self.running = True
-        self.current_scene = None
+        self.running = False
         self.palette = {
             "bg": (0, 0, 0),
             "cell_bg": (36, 107, 31),

@@ -6,6 +6,7 @@ from scenes.simulation.sidebar import Sidebar
 import pygame
 import pygame_gui
 import math
+import random
 
 
 class SimulationScene(BaseScene):
@@ -81,9 +82,14 @@ class SimulationScene(BaseScene):
 
     def draw_cell(self, cell, x, y, s):
         surface = self.context.screen
+        if cell.burning == 3:
+            pygame.draw.rect(self.context.screen, (0, 0, 0), (x, y, s, s))
+            return
+
         pygame.draw.rect(
             self.context.screen, self.context.palette["cell_bg"], (x, y, s, s)
         )
+
         if cell.tree_density > 0.75:
             tree_scaled = pygame.transform.smoothscale(self.tree_img, (s, s))
             surface.blit(tree_scaled, (x, y))
@@ -93,6 +99,72 @@ class SimulationScene(BaseScene):
         elif cell.tree_density > 0.25:
             tree_scaled_3 = pygame.transform.smoothscale(self.tree_img_3, (s, s))
             surface.blit(tree_scaled_3, (x, y))
+        if cell.burning == 2:
+            rect = pygame.Rect(x, y, s, s)
+            self.draw_flame_overlay(
+                self.context.screen, rect, self.enviroment.wind_speed
+            )
+
+    def draw_flame_overlay(
+        self, surface, cell_rect, wind=(0.0, 0.0), intensity=1.0, t=0
+    ):
+
+        flame_height = int(cell_rect.height * 0.9 * intensity)
+        base_width = cell_rect.width * 0.4
+        shear = wind[0] * 0.5  # wind shear strength
+        cx = cell_rect.x + cell_rect.width // 2
+        cy = cell_rect.y + cell_rect.height - 5  # base of the flame
+
+        flame_surf = pygame.Surface(
+            (cell_rect.width, cell_rect.height), pygame.SRCALPHA
+        )
+
+        points = []
+        num_segments = 20
+
+        for i in range(num_segments + 1):
+            y = cell_rect.height - (i / num_segments) * flame_height
+            flicker = random.uniform(-3, 3)
+            x_offset = flicker + shear * (cell_rect.height - y)
+            width_factor = 1 - i / num_segments
+            x = cell_rect.width / 2 - base_width * width_factor / 2 + x_offset
+            points.append((x, y))
+
+        for i in range(num_segments, -1, -1):
+            y = cell_rect.height - (i / num_segments) * flame_height
+            flicker = random.uniform(-3, 3)
+            x_offset = flicker + shear * (cell_rect.height - y)
+            width_factor = 1 - i / num_segments
+            x = cell_rect.width / 2 + base_width * width_factor / 2 + x_offset
+            points.append((x, y))
+
+        # Gradient fill — bottom to top (yellow → orange → red → transparent)
+        gradient_colors = [
+            (180, 50, 10, 180),
+            (255, 100, 20, 160),
+            (255, 180, 50, 120),
+            (255, 255, 100, 60),
+            # (100, 20, 5, 0),
+        ]
+
+        # Draw layered gradient polygons for smooth fade
+        for i, color in enumerate(gradient_colors):
+            scale = 1 - (i / len(gradient_colors)) * 0.5
+            scaled_points = [
+                (
+                    x * scale + (1 - scale) * cell_rect.width / 2,
+                    y * scale + (1 - scale) * cell_rect.height / 2,
+                )
+                for x, y in points
+            ]
+            pygame.draw.polygon(flame_surf, color, scaled_points)
+
+        # Blit to main surface with alpha
+        surface.blit(
+            flame_surf,
+            (cell_rect.x, cell_rect.y),
+            special_flags=pygame.BLEND_PREMULTIPLIED,
+        )
 
     def render(self):
         self.draw_grid()
@@ -100,3 +172,6 @@ class SimulationScene(BaseScene):
 
     def handle(self, event):
         self.sidebar.handle(event)
+
+    def update(self):
+        self.grid.update_cells()

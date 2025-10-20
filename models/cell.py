@@ -12,6 +12,8 @@ class Cell:
     def __init__(self):
         self.tree_density = 0.0
         self.burning = burning_state.NONFLAMMABLE
+        self.burn_count = 0
+        self.slope = 0.0
 
     @staticmethod
     def generate_cell():

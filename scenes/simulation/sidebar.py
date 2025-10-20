@@ -4,7 +4,7 @@ import pygame_gui
 
 
 def angle_to_vector(theta):
-    return math.cos(theta), math.sin(theta)
+    return math.cos(theta), -1 * math.sin(theta)
 
 
 def update_wind_from_mouse(mouse_pos, arrow_center):
@@ -159,9 +159,15 @@ class Sidebar:
         elif event.type == pygame.MOUSEBUTTONUP:
             self.dragging_wind = False
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
-            print(event.ui_element)
             if event.ui_element == self.randomize_button:
                 self.grid.randomize()
+            if event.ui_element == self.play_button:
+                if self.context.running == False:
+                    self.play_button.set_text("Pause")
+                    self.context.running = True
+                else:
+                    self.play_button.set_text("Play")
+                    self.context.running = False
 
         if self.dragging_wind:
             pos = pygame.mouse.get_pos()
