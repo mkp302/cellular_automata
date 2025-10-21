@@ -1,41 +1,50 @@
-\documentclass{article}
+\documentclass{report}
 \usepackage{graphicx} % Required for inserting images
+\usepackage[a4paper,
+            bindingoffset=0.2in,
+            left=1in,
+            right=1in,
+            top=1in,
+            bottom=1in,
+            footskip=.25in]{geometry}
+
 
 \title{Research Proposal}
 \author{Mark Power}
-\date{October 2025}
-\documentclass{article}
-\usepackage{graphicx} % Required for inserting images
-
-\title{Research Proposal}
-\author{Mark Power}
-\date{October 2025}
 
 \begin{document}
 
 \maketitle
 
-\section{Introduction}
-The goal of this research is to evaluate the use of cellular automata in modelling the forest fires that occurred in Newfoundland during the Summer of 2025.
+The goal of this research is to develop a model that simulates how forest fires spread, using cellular automata. To evaluate how well the model performs, the output of this model will be compared against forest fires that occurred in Newfoundland during the Summer of 2025. Notably the Kingston, Paddy's Pond and Martin Lake fires. \\ \par
 
-Cellular Automaton consist of a grid of cells and use simple rules to model complex processes. Useful for simulations where each successive state only depends on the state of its immediate neighbours. When considering which cells to use when updating two popular methods are Von Neuman and Moore Neighbourhoods.
+A Cellular Automaton is a simple computational model for simulating complex processes. They consist of a grid of cells and use simple rules to model complex processes. They are useful for simulations where each successive state only depends on the state of its immediate neighbours. This makes them a prime candidate for modelling the spread of forest fires. \\ \par
 
-One application of Cellular Automaton is to model the spread of forest fires.
+To update each cell in the simulation a model for how a forest fire spreads is needed. A popular approach for this is the Wang Zhengfei model. This model considers fuel type, wind speed, and slope as parameters driving how a fire spreads.\\
 
-A Model for how fire spreads is the Wang Zhengfei. This models considers fuel type, wind speed, and slope as parameters driving how a fire spreads
-
+In the Wang Zhengfei, the model spread rate of a fire $R$, is given by:\\
 $$R = R_0 K_w K_s / cos \alpha$$
-where $R_0 is the initial fire spread rate, $K_w$ is the wind velocity correction factor, $K_s$ is the fuel correction factor. $\alpha$is the average terrain slope.
+where $R_0$ is the initial fire spread rate, $K_w$ is the wind velocity correction factor, $K_s$ is the fuel correction factor. $\alpha$is the average slope of the terrain.
 
 \section{Methodology}
     \subsection{Data Acquisition}
-        \begin{list}
-        \end{list}
+        Data needed for the model is:
+        \begin{enumerate}
+        \item Vegetation data: proxy for $K_s$
+        \item Wind Data for $K_w$
+        \item Topological data for $\alpha$
+    \end{enumerate}
 
     \subsection{Algorithm}
+    The Cellular Automata will be a N by N grid of cells, each one representing a section of forest.
+    Each Cell can be in one of four states non-flammible, unburnt, burning and burnt out.\\
+    
+    For each cell $C_i_j$, its value after some timestep $\Delta t$ can be found by analyzing it's 8 neighbours. If $C_i_j$
     
     \subsection{Evaluation}
-    
+        Using satellite images provided by c-core it is possible to compare the simulation results 
+
+        $Accurcacy = (T_n + $
     
  \section{References}
  https://c-core.ca/solutions/newfoundland-wildfires-as-seen-from-space/
