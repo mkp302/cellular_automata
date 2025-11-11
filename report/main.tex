@@ -66,11 +66,79 @@ $\phantom{^\dag}$\,St.\ John's (NL) A1C 5S7, Canada
 
 \vspace{6mm}\par\noindent
 E-mails:
+\documentclass[11pt,a4paper,fleqn]{article}
+
+\usepackage[ansinew]{inputenc}
+\usepackage[mathscr]{eucal}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+
+\allowdisplaybreaks
+\flushbottom
+
+\setlength{\textwidth}{160.0mm}
+\setlength{\textheight}{245.0mm}
+\setlength{\oddsidemargin}{0mm}
+\setlength{\evensidemargin}{0mm}
+\setlength{\topmargin}{-15mm} %{-20mm} for arXiv, {-15mm} for printing on A4
+\setlength{\parindent}{5.0mm}
+
+\hypersetup{colorlinks, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+%\bibliographystyle{biblio}
+
+\makeatletter
+\long\def\@makecaption#1#2{%
+  \vskip\abovecaptionskip\footnotesize
+  \sbox\@tempboxa{#1. #2}%
+  \ifdim \wd\@tempboxa >\hsize
+    #1. #2\par
+  \else
+    \global \@minipagefalse
+    \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+  \fi
+  \vskip\belowcaptionskip}
+\makeatother
+
+\marginparwidth=17mm \marginparsep=1mm \marginparpush=4mm
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+{\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+\newtheorem{remark}{Remark}
+\newtheorem*{remark*}{Remark}
+}
+
+
+\begin{document}
+
+\par\noindent {\LARGE\bf
+Modeling Forest Fires with Cellular Automata
+\par}
+
+\vspace{6mm}\par\noindent{\bf
+Mark Power$^{\dag}$
+}
+
+\vspace{6mm}\par\noindent{\it
+$^\dag$\,Department of Mathematics and Statistics, Memorial University of Newfoundland,\\
+$\phantom{^\dag}$\,St.\ John's (NL) A1C 5S7, Canada
+}
+
+\vspace{6mm}\par\noindent
+E-mails:
 mkp302@mun.ca
 
 
 \vspace{9mm}\par\noindent\hspace*{8mm}\parbox{140mm}{\small\looseness=-1
-Your abstract goes here
+By using the Kingston fire as a case study, this paper aims to evaluate the effectiveness of a cellualar automata model in simulating the spread of the Kingston fire.. 
 }\par\vspace{5mm}
 
 
@@ -81,21 +149,31 @@ Climate Data
 
 
 \section{Introduction}
+Cellular Autamata is a simple computational model used to simulate complex processes. It consists of an N by N grid of cells, with each cell having its own internal state. The state of each cell is updated by comparing its state to a neighbourhood of cells around it.
 
-\section{Methods}\label{sec:Methods}
+The rules of 
+
+\section{Case Study}
+On August 3rd, 2025 a forest fire broke out near the town of Kingston, Newfoundland. 
+
+\section{Data and Methods}\label{sec:Data and Methods}
+
+\subsection{Datasets}
+
+\subsection{Algorithm}
+
+\subsection{Implementation}
 
 \section{Results}\label{sec:Results}
 
 \section{Conclusion}\label{sec:Conclusion}
 
-
-\section*{Acknowledgements}
-
-The author thanks XXX.
-
+\section{github}
 
 \footnotesize\setlength{\itemsep}{0ex}
 \bibliography{biblio}
 
 \end{document}
-
+:\While{}
+  \State 
+\EndWhile
