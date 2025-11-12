@@ -77,7 +77,7 @@ mkp302@mun.ca
 
 
 \vspace{9mm}\par\noindent\hspace*{8mm}\parbox{140mm}{\small\looseness=-1
-This research applies a cellular automata model to simulate the 2025 forest fire in Kingston Newfoundland. It combines topological and meteorological data to demonstrate that a simple computation model can be effective at modelling complex fire dynamics. The model's agreement with satellite observations during the first week of the fire demonstrate the potential for cellular automata models to be used as a tool for predicting how forest fires evolve.
+This research uses a cellular automata model to simulate the 2025 forest fire in Kingston, Newfoundland. The model combines topological and meteorological data to demonstrate that a simple computational model can be effective at simulating complex fire dynamics. The simulations's agreement with satellite observations during the first week of the fire demonstrate the potential for cellular automata models to be used as a tool for predicting how forest fires evolve.
 }\par\vspace{5mm}
 
 
@@ -89,9 +89,9 @@ Climate Data
 
 \section{Introduction}
 \subsection{Cellular Automata}
-A cellular automaton is a computational model used to simulate complex processes. It consists of a discrete N by N grid of cells, with each cell having its own internal state. The state of each cell is usually over some discrete time step with each cell's subsequence state depending on a neighbourhood of cells around it. A neighbourhood of a cell is usually defined to be the cells adjacent to it in the grid. The rules governing how cells are updated are generally quite simple, making the simulations less computationally demanding compared to physical models. \cite{WolframStephen1983Smoc}\\
+A cellular automaton is a computational model used to simulate complex processes. It consists of a discrete N by N grid of cells, each cell having its own internal state. The state of each cell is usually updated over some discrete time step with each cell's subsequence state depending on a neighbourhood of cells around it. A neighbourhood of a cell is usually defined to be the cells adjacent to it in the grid. The rules governing how cells are updated are generally quite simple, making the simulation less computationally demanding compared to physical models. \cite{WolframStephen1983Smoc}\\
 
-There are many practical applications of Cellular Automata simulations. The key insight is that cellular automata models take advantage of locality. For example, one domain these models excel in modelling is the spread forest fires. Typically, a fire will only spread to sections of a forest close to the fire front making it well-suited for modelling with cellular automata.\\
+There are many practical applications of cellular automata simulations. The key insight is that cellular automata models take advantage of locality. For example, one domain these models excel in is modelling the spread forest fires. Typically, a fire will only spread to sections of a forest close to the fire front making it well-suited for simulating with cellular automata.\\
 
 This research uses the Kingston fire as a case study to develop a forest fire model.
 
@@ -99,12 +99,12 @@ This research uses the Kingston fire as a case study to develop a forest fire mo
 \section{Case Study}
 In 2025 hot and dry weather during the month of August lead to multiple forest fires breaking out across Newfoundland. One of the most devastating fires occurred in Conception bay North. The fire started on August 3rd near the town of Kingston. By August 5th it had grown to 720 hectares leading many residents to be evacuated \cite{youtube_wildfireinfo_2025_aug05}. Throughout, the month of August the fire continued to grow, and it wasn't until August 30th that the fire was listed as being under control and evacuation orders were lifted.\cite{cbc_2025_aug30} \\
 
-The seriousness of this fire demonstrates the need to have an accurate model of how forest fires develop. Being able to predict the spread of a fire could help in forest fire efforts by predicting which areas to focus on, allowing more effective fire suppression efforts. It would also aid in evacuation orders, showing which communities could potentially be in danger.\\
+The seriousness of this fire demonstrates the need to have an accurate model of how forest fires develop. Being able to predict the spread of a fire could help in forest fire efforts by predicting which areas to focus on, allowing more effective fire suppression efforts. It would also aid in preparing for evacuation orders, by showing which communities could potentially be in danger.\\
 
 \section{Wang Zhengfei Forest Fire Model}
 This research uses the Wang Zhengfei Forest Fire Model as a basis for calculating how fast a fire spreads. \\
 
-The Wang Zhengfei model is a set of empirical equations that are used to calculate the spread rate of a forest fire. It starts with an estimation for an initial spread rate, which is further modified by several constants. These constants incorporate both wind and terrain data.\cite{WangXiaoxue2022RPoF}\\
+The Wang Zhengfei model is a set of empirical equations that are used to calculate the spread rate of a forest fire. It starts with an estimate for an initial spread rate, which is further modified by several constants. These constants incorporate both wind and terrain data.\cite{WangXiaoxue2022RPoF}\\
 
 The general form of the Wang Zhengfei equation is:
 $$R = R_0 K_s K_w K_{\phi}/cos(\alpha)$$
@@ -165,9 +165,9 @@ $R_{\text{wind}} =
 \subsection{Datasets}
 Several datasets are used in the fire spread algorithm.\\
 
-From the European Centre for Medium-Range Weather Forecasts's (ECMRWF) Reanalysis v5 (ER5) dataset \cite{ERA5_2025}, wind velocity and temperature data were collected during the month of August. The reanalysis data latitudinal/longitudinal grid was too coarse grained for the cellular automata grid, so values were sampled near Kingston and it was assumed these held constant across the North Shore area.\\
+From the European Centre for Medium-Range Weather Forecast's (ECMRWF) Reanalysis v5 (ER5) dataset \cite{ERA5_2025}, wind velocity and temperature data were collected during the month of August. The reanalysis data latitudinal/longitudinal grid was too coarse grained for the cellular automata grid, so values were sampled near Kingston and it was assumed these held constant across the North Shore area.\\
 
-Elevation data was collected from the NASA Shuttle Radar Topography Mission (SRTM) dataset \cite{SRTM_2013}. The topological data was imported into the project from a tif image. Each pixel in the tif image encoded the elevation height in m above sea level. The difference in elevation was then used to calculate the slope/aspect for each cell in the simulation. Some pre-processing had to be done to map the coordinates to the simulation grid since the projection method used in the dataset (SRTM) dataset did not align with the grid.Figure \ref{fig:terrain} shows the processed elevation data around the Kingston region \\
+Elevation data was collected from the NASA Shuttle Radar Topography Mission (SRTM) dataset \cite{SRTM_2013}. The topological data was imported into the project from a tif image. Each pixel in the tif image encoded the elevation height in m above sea level. The difference in elevation was then used to calculate the slope/aspect for each cell in the simulation. Some pre-processing had to be done to map the coordinates to the simulation grid since the projection method used in the dataset (SRTM) dataset did not align with the grid.Figure \ref{fig:terrain} shows the elevation data used in this simulation\\
 \begin{figure}[h]
 \caption{Terrain data from SRTM}
 \label{fig:terrain}
@@ -206,7 +206,7 @@ This section of forest has run out of fuel and is no longer burning\\
 
 The algorithm for updating each cell after some time step $\delta t$ is as follows:\\\\
 
-For each cell in the grid, we first check if it is in the burning state. If it is, we iterate over each neighbouring cell and calculate how fast the fire is spreading in that direction. The formula used to calculate the spread rate of the fire is $R_{wind}$ from: \ref{tab:spread-rates} The wind speed V is calculated using the wind vector from the ER5 dataset. The aspect $\phi$ is calculated using the difference in elevation between neighbouring cells. and the wind direction $\theta$ is calculated using difference in angle between the wind vector and the direction vector to the neighbouring cell. 
+For each cell on the grid, we first check if it is in the burning state. If it is, we iterate over each neighbouring cell and calculate how fast the fire is spreading in that direction. The formula used to calculate the spread rate of the fire is $R_{wind}$ from: \ref{tab:spread-rates} The wind speed V is calculated using the wind vector from the ER5 dataset. The aspect $\phi$ is calculated using the difference in elevation between neighbouring cells. and the wind direction $\theta$ is calculated using the difference in angle between the wind vector and the direction vector to the neighbouring cell. 
 
 \begin{table}[h!]
 \centering
@@ -219,14 +219,14 @@ $(i+1, j-1)$ & $(i+1, j)$ & $(i+1, j+1)$ \\ \hline
 \end{tabular}
 \end{table}
 
-Each section of forest, roughly corresponds to a $90m^2$ area. So, given the time elapsed from the last update, $\Delta t$, we then calculate how far the fire has spread $\text{Distance} = \text{Spread Rate } * \Delta t$. If the neighbouring cell is unburnt, and the fire has spread far enough to reach that cell then we update the neighbouring cell to be burning. After enough time has elapsed a burning cell will be out of fuel, it then transitions to the burnt out state. \\
+Each section of forest roughly corresponds to a $90m^2$ area. So, given the time elapsed from the last update, $\Delta t$, we can calculate how far the fire has spread $\text{Distance} = \text{Spread Rate } * \Delta t$. If the neighbouring cell is unburnt, and the fire has spread far enough to reach that cell, the neighbouring cell updated to be burning. After enough time has elapsed a burning cell will be out of fuel, it will then transitions to the burnt out state. \\
  
-Cells at the edge of the grid do not have 8 neighbours. To remedy this, extra cells are added around the perimeter of the grid. The extra cells are only used to update cells at the edge of the grid and do not factor into the simulation. \\
+Cells at the edge of the grid do not have 8 neighbours. To remedy this, extra cells are added around the perimeter of the grid. These extra cells are only used to update cells at the edge of the grid and do not factor into the simulation. \\
 
 
 \subsection{Implementation}
 
-The algorithm was implemented in python and used the pygame and pygame\_gui \cite{pygame_gui_wiki} libraries to visualize the results. The pygame library provides methods for creating a window and drawing objects on the screen. The pygame\_gui library provides support for user interface widgets such as buttons and text boxes. The 300 by 300 grid of cells is drawn to the screen with each pixel representing a section forest. A green colour is used to represent unburnt cells, blue is used to represent non-flammable cells, red is used to represent cells that are burning and black is used to represent cells that are burnt out.  \\
+The algorithm was implemented in python and used the pygame\cite{pygame_docs} and pygame\_gui \cite{pygame_gui_wiki} libraries to visualize the results. The pygame library provides methods for creating a window and drawing objects on the screen. The pygame\_gui library provides support for user interface widgets such as buttons and text boxes. The 300 by 300 grid of cells is drawn to the screen with each pixel representing a cell/section forest. A green colour is used to represent unburnt cells, blue is used to represent non-flammable cells, red is used to represent cells that are burning and black is used to represent cells that are burnt out.  \\
 
 To initialize the grid, a stencil was created using a terrain map. Non-flammable features such as lakes and rivers were masked using an image processing program called GIMP. The image was scaled to an appropriate size to create a 300 by 300 grid. The elevation date was also imported and projected onto each cell in the grid.\\
 
@@ -236,7 +236,7 @@ To initialize the grid, a stencil was created using a terrain map. Non-flammable
 \includegraphics{stencil_3.png}
 \end{figure}
 
-A time step of 30 minutes was chosen to have the simulation run at a reasonable speed. During each update, a utc timestamp was updated and used to query the ER5 dataset.The simulation was run for 2 weeks in simulation time. At relevant timestamps a screenshot was taken so it could be compared to satellite images of how the fire really spread.
+A time step of 30 minutes was chosen to have the simulation run at a reasonable speed. During each update, a utc timestamp was updated and used to query the ER5 dataset. The simulation was run for 2 weeks in simulation time. At relevant timestamps a screenshot was taken so it could be compared to satellite images of how the fire really spread.
 
 \begin{figure}[h]
 \caption{Forest Fire Simulation App}
@@ -246,7 +246,7 @@ A time step of 30 minutes was chosen to have the simulation run at a reasonable 
 
 
 \section{Results}\label{sec:Results}
-The simulation output was compared against satellite images taken of the actual fire as shown in \ref{fig:results}. By overlaying the burn radius of the simulation on top of the satellite images, the model was shown to agree strongly with the real fire during the first week of activity. However, after the first week, the simulation appears to outpace the real fire, growing slightly faster. This is to be expected since the real fire was being actively suppressed by forest fighting efforts and this was not taken into account by the model. Overall, the models early correspondence with the real fire demonstrates that a cellular automata perform well in modelling the dynamics of forest fires. \\
+The simulation output was compared with satellite images taken of the actual fire as shown in \ref{fig:results}. By overlaying the burn radius of the simulation on top of the satellite images, the model was shown to agree strongly with the real fire during the first week of activity. However, after the first week, the simulation appears to outpace the real fire, growing slightly faster. This is to be expected since the actual fire was actively being suppressed by forest fighting efforts and this was not taken into account by the model. Overall, the models early correspondence with the real fire demonstrates that cellular automata perform well in simulating the dynamics of forest fires. \\
 
 
 
@@ -267,13 +267,13 @@ The simulation output was compared against satellite images taken of the actual 
 \section{Limitations}
 There are a number of limitations in the implementation of this model.
 
-The Wang Zhengfei model depends on a number of constants. For example, the initial spread rate $R_0$ depends on moisture levels and the type of fuel being burned. $R_0$ usually determined experimentally by burning material in the absence of wind. Another important variable is the fuel configuration constant, which depends on the density and type of vegetation constant. Unfortunately, there was little data available on reasonable values for these constants for forests in Newfoundland, as much of the research for these models focus on fires occurring in China. In order to come up with reasonable values, I ran multiple simulations trying different parameters and decided on values that performed the best. In the future, there might be value in studying the unique forest landscapes in Newfoundland. \\
+The Wang Zhengfei model depends on a number of constants. For example, the initial spread rate $R_0$ depends on moisture levels in the fuel and the type of fuel being burned. $R_0$ usually determined experimentally by burning material in the absence of wind. Another important variable is the fuel configuration constant, which depends on the density and type of vegetation constant. Unfortunately, there was little data available to derive reasonable values for these constants suitible for forests in Newfoundland. Much of the research for these models focus on fires occurring in China. In order to come up with reasonable values, I ran multiple simulations trying different parameters and decided on values that performed the best. In the future, there might be value in studying the unique configurations of forest landscapes in Newfoundland. \\
 
-Another limitation is that this model does not take into account fire fighting efforts. During real forest fires, there are attempts to suppress the fire at the front. For example, during the Kingston fire multiple water bombers were employed. In future work, this could be accounted by artificially lowering the spread rate of the fire across certain cells were fire suppression methods were used. \\
+Another limitation is that this model does not take into account fire fighting efforts. During real forest fires, there are attempts to suppress the fire at the fire front. For example, during the Kingston fire, multiple water bombers were employed. In future work, this could be accounted for by artificially lowering the spread rate of the fire across certain cells where fire suppression methods are being used. \\
 
 
 \section{Conclusion}\label{sec:Conclusion}
-This paper showed that a relatively simple cellular computational model combined with meteorological and topological data can model the complex dynamics of forest fires quite well. With the increasing frequency and severity of forest fires due to climate change \cite{deGrootWilliamJ.2013Ccio} these types of models will be valuable for understanding and predicting how forest fires behave. Although simple, this type of model will be a useful tool in supporting firefighting efforts in fire-prone regions.
+This paper showed that a relatively simple cellular computational model combined with meteorological and topological data can model the complex dynamics of forest fires quite well. With the increasing frequency and severity of forest fires due to climate change \cite{deGrootWilliamJ.2013Ccio} these types of models will be valuable tools to understand and predict how forest fires evolve. Although simple, these types of models will be useful in supporting firefighting efforts in fire-prone regions.
 
 \section{github}
 https://github.com/mkp302/cellular\_automata
