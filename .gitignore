@@ -206,4 +206,6 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-/data/
+/data/ndvi.nc4
+/data/test_2.grib.5b7b6.idx
+
