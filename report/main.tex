@@ -66,74 +66,6 @@ $\phantom{^\dag}$\,St.\ John's (NL) A1C 5S7, Canada
 
 \vspace{6mm}\par\noindent
 E-mails:
-\documentclass[11pt,a4paper,fleqn]{article}
-
-\usepackage[ansinew]{inputenc}
-\usepackage[mathscr]{eucal}
-\usepackage{amsmath,amssymb,amsthm}
-\usepackage{graphicx}
-\usepackage{caption}
-\usepackage{subcaption}
-\usepackage{hyperref}
-
-\allowdisplaybreaks
-\flushbottom
-
-\setlength{\textwidth}{160.0mm}
-\setlength{\textheight}{245.0mm}
-\setlength{\oddsidemargin}{0mm}
-\setlength{\evensidemargin}{0mm}
-\setlength{\topmargin}{-15mm} %{-20mm} for arXiv, {-15mm} for printing on A4
-\setlength{\parindent}{5.0mm}
-
-\hypersetup{colorlinks, linkcolor=blue, citecolor=blue, urlcolor=blue}
-
-%\bibliographystyle{biblio}
-
-\makeatletter
-\long\def\@makecaption#1#2{%
-  \vskip\abovecaptionskip\footnotesize
-  \sbox\@tempboxa{#1. #2}%
-  \ifdim \wd\@tempboxa >\hsize
-    #1. #2\par
-  \else
-    \global \@minipagefalse
-    \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
-  \fi
-  \vskip\belowcaptionskip}
-\makeatother
-
-\marginparwidth=17mm \marginparsep=1mm \marginparpush=4mm
-
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}{Lemma}
-\newtheorem{corollary}{Corollary}
-\newtheorem{proposition}{Proposition}
-{\theoremstyle{definition}
-\newtheorem{definition}{Definition}
-\newtheorem{example}{Example}
-\newtheorem{remark}{Remark}
-\newtheorem*{remark*}{Remark}
-}
-
-
-\begin{document}
-
-\par\noindent {\LARGE\bf
-Modeling Forest Fires with Cellular Automata
-\par}
-
-\vspace{6mm}\par\noindent{\bf
-Mark Power$^{\dag}$
-}
-
-\vspace{6mm}\par\noindent{\it
-$^\dag$\,Department of Mathematics and Statistics, Memorial University of Newfoundland,\\
-$\phantom{^\dag}$\,St.\ John's (NL) A1C 5S7, Canada
-}
-
-\vspace{6mm}\par\noindent
-E-mails:
 mkp302@mun.ca
 
 
@@ -149,9 +81,11 @@ Climate Data
 
 
 \section{Introduction}
-Cellular Autamata is a simple computational model used to simulate complex processes. It consists of an N by N grid of cells, with each cell having its own internal state. The state of each cell is updated by comparing its state to a neighbourhood of cells around it.
+\subsection{Cellular Automata}
+Cellular Autamata is a simple computational model used to simulate complex processes. It consists of an N by N grid of cells, with each cell having its own internal state. The state of each cell is updated by comparing its state to a neighbourhood of cells around it. The rules governing the update of cells are usually quite simple making the simulations less computationally demanding compared to physical models.
 
-The rules of 
+There are many practical applications of Cellular Automata simulations. One such application is the modeling of forest fires. In such a model, the cells of the grid represent sections of forest. This is a suitable model since a fire will typically spread locally.
+
 
 \section{Case Study}
 On August 3rd, 2025 a forest fire broke out near the town of Kingston, Newfoundland. 
@@ -159,12 +93,101 @@ On August 3rd, 2025 a forest fire broke out near the town of Kingston, Newfoundl
 \section{Data and Methods}\label{sec:Data and Methods}
 
 \subsection{Datasets}
+A number of datasets is used in the fire spread algorithm.
+
+From the Eurpean Centre ER5 analysis dataset wind velocity (u,v) and temperature data was collected for the month of August. The data was 
+
+From Opentopology, elevation data was collected from the NASA Shuttle Radar Topography Mission (SRTM). The 
 
 \subsection{Algorithm}
+In the Forest fire Model each cell can be in one of four states:
+
+\begin{table}[h!]
+\centering
+\caption{Internal State of Cells}
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{State} & \textbf{Condition} & \textbf{Description} \\
+\hline
+0 & Non-flammable & 
+The section of forest represents terrain features that are not flammable such as lakes or rivers \\
+\hline
+1:& Unburnt &
+This section of forest contains fuel that has not yet ignited \\
+\hline
+2:& Burning &
+This section of forest contains fuel and it is now burning \\
+\hline
+3:& Burnt out &
+This section of forest has run out of fuel and is no longer burning\\
+\hline
+
+
+\end{tabular}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\caption{Spread rate formulas for different slope and wind directions.}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Condition} & \textbf{Spread Rate Formula} \\
+\hline
+Uphill &
+$R_{\text{uphill}} =
+0.969\, R_0\, K_s\, e^{3.533(\tan \phi)^{1.2} + 0.182\, V \cos \theta}$ \\[6pt]
+\hline
+Downhill &
+$R_{\text{downhill}} =
+0.969\, R_0\, K_s\, e^{-3.533(\tan \phi)^{1.2} + 0.182\, V \cos(180^\circ - \theta)}$ \\[6pt]
+\hline
+Left (flat slope) &
+$R_{\text{left}} =
+0.969\, R_0\, K_s\, e^{0.182\, V \cos(\theta + 90^\circ)}$ \\[6pt]
+\hline
+Right (flat slope) &
+$R_{\text{right}} =
+0.969\, R_0\, K_s\, e^{0.182\, V \cos(\theta - 90^\circ)}$ \\[6pt]
+\hline
+Wind (favorable direction) &
+$R_{\text{wind}} =
+0.969\, R_0\, K_s\, e^{3.533(\tan(\phi \cos \theta))^{1.2} + 0.182\, V},
+\quad
+\text{if } \theta \in [0^\circ, 90^\circ] \cup [270^\circ, 360^\circ]$ \\[6pt]
+\hline
+Wind (opposing direction) &
+$R_{\text{wind}} =
+0.969\, R_0\, K_s\, e^{-3.533(\tan(\phi \cos(180^\circ - \theta)))^{1.2} + 0.182\, V},
+\quad
+\text{if } 90^\circ < \theta < 270^\circ$ \\[6pt]
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\caption{Neighbour positions relative to cell $(i, j)$ and favourable wind directions.}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Neighbour} & \textbf{Grid Offset $(\Delta i, \Delta j)$} & \textbf{Favourable Wind Direction (°)} \\
+\hline
+Top-left     & (-1, -1) & 315° (Northwest) \\
+Top          & (-1,  0) & 0° (North) \\
+Top-right    & (-1, +1) & 45° (Northeast) \\
+Left         & ( 0, -1) & 270° (West) \\
+Right        & ( 0, +1) & 90° (East) \\
+Bottom-left  & (+1, -1) & 225° (Southwest) \\
+Bottom       & (+1,  0) & 180° (South) \\
+Bottom-right & (+1, +1) & 135° (Southeast) \\
+\hline
+\end{tabular}
+\end{table}
 
 \subsection{Implementation}
 
 \section{Results}\label{sec:Results}
+
+\section{Limitations}
 
 \section{Conclusion}\label{sec:Conclusion}
 
@@ -174,6 +197,4 @@ On August 3rd, 2025 a forest fire broke out near the town of Kingston, Newfoundl
 \bibliography{biblio}
 
 \end{document}
-:\While{}
-  \State 
-\EndWhile
+
