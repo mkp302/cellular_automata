@@ -14,6 +14,9 @@ class Cell:
         self.burning = burning_state.NONFLAMMABLE
         self.burn_count = 0
         self.slope = 0.0
+        self.elevation = 0.0
+        self.spread = {}
+        self.color = (0, 0, 0)
 
     @staticmethod
     def generate_cell():

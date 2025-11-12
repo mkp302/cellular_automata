@@ -16,6 +16,7 @@ def main():
     clock = pygame.time.Clock()
     t = 0
     loop = 0
+    pygame.display.set_caption("Forest Fire Cellular Automata")
     while True:
         time_delta = clock.tick(60) / 1000.0
         t += time_delta
@@ -24,14 +25,11 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.VIDEORESIZE:
-                window_size = context.screen.get_size()
-                context.window_size = window_size
             scene_manager.top().handle(event)
             context.ui_manager.process_events(event)
 
         context.ui_manager.update(time_delta)
-        if context.running and loop % 10 == 0:
+        if context.running and loop % context.speed == 0:
             scene_manager.top().update()
 
         scene_manager.top().render()

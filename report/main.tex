@@ -70,7 +70,7 @@ mkp302@mun.ca
 
 
 \vspace{9mm}\par\noindent\hspace*{8mm}\parbox{140mm}{\small\looseness=-1
-By using the Kingston fire as a case study, this paper aims to evaluate the effectiveness of a cellualar automata model in simulating the spread of the Kingston fire.. 
+Cellular Automata is a useful computation By using the Kingston fire as a case study, this paper aims to evaluate the effectiveness of a cellualar automata model in simulating the spread of the Kingston fire.
 }\par\vspace{5mm}
 
 
@@ -82,25 +82,85 @@ Climate Data
 
 \section{Introduction}
 \subsection{Cellular Automata}
-Cellular Autamata is a simple computational model used to simulate complex processes. It consists of an N by N grid of cells, with each cell having its own internal state. The state of each cell is updated by comparing its state to a neighbourhood of cells around it. The rules governing the update of cells are usually quite simple making the simulations less computationally demanding compared to physical models.
+Cellular Automata is a simple computational model used to simulate complex processes. It consists of an N by N grid of cells, with each cell having its own internal state. The state of each cell is updated by comparing its state to a neighbourhood of cells around it. The rules governing the update of cells are usually quite simple making the simulations less computationally demanding compared to physical models. \\\\
 
-There are many practical applications of Cellular Automata simulations. One such application is the modeling of forest fires. In such a model, the cells of the grid represent sections of forest. This is a suitable model since a fire will typically spread locally.
+There are many practical applications of Cellular Automata simulations. One such application is the modelling of forest fires. In this model, the cells of the grid represent sections of forest. This is a suitable model for simulating forest fires, since a section of forest is more likely to catch fire if it is close to the fire front.
 
 
 \section{Case Study}
-On August 3rd, 2025 a forest fire broke out near the town of Kingston, Newfoundland. 
+In 2025 hot and dry weather during the month of August lead to multiple forest fires breaking out across Newfoundland. One of the most devastating fires occurred in Conception bay North. The fire started on August 3rd near the town of Kingston. By August 5th it had grown to 720ha leading many residents to be evacuated. Throughout, the month of August the fire continued to grow before being listed as under control 
 
+The seriousness of this fire demonstrates the need to have an accurate model of how forest fires develop. Being able to predict the spread of a fire, could help in forest fire efforts by predicting what areas allowing more effective fire suppression efforts. It would also aid in evacuation of communities, as a predictive model could show which communities are in danger. 
+
+\section{Wang Zhengfei Forest Fire Model}
+The Wang Zhengfei model is an empirical fire model that incorporates slope and wind direction to calculate the rate a fire spreads. It starts with an estimation for an initial spread rate which is further modified by several constants.
+The general form of the Wang Zhengfei equation is:
+$R = R_0 K_s K_w K_{\phi}/cos(\alpha)$
+
+$R_0$ is the initial spread rate, it is usually determined empirically by ignition experiments, where relevant material is burned in the absence of wind. Without having access to  
+
+$K_s$ is the fuel configuration constant, it depends on the type and density of the fuel being burned. For example, a fire will spread much faster in a dense forest than a sparse forest. 
+
+
+$K_w$ is the wind correction term. 
+
+$K_w = 0.969 e^{0.1783V}$  where V is the wind speed in m/s.
+
+$K_{\phi}$ is the terrain correction factor. Fires spread much faster up steeper elevations compared 
+
+Combining the constants a direct form of the Wang Zhengfei equations are listed in \ref{tab:spread-rates}:w
+
+\begin{table}[h!]
+\centering
+\caption{Spread rate formulas for different slope and wind directions.}
+\label{tab:spread-rates}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Condition} & \textbf{Spread Rate Formula} \\
+\hline
+Uphill &
+$R_{\text{uphill}} =
+0.969\, R_0\, K_s\, e^{3.533(\tan \phi)^{1.2} + 0.182\, V \cos \theta}$ \\[6pt]
+\hline
+Downhill &
+$R_{\text{downhill}} =
+0.969\, R_0\, K_s\, e^{-3.533(\tan \phi)^{1.2} + 0.182\, V \cos(180^\circ - \theta)}$ \\[6pt]
+\hline
+Left (flat slope) &
+$R_{\text{left}} =
+0.969\, R_0\, K_s\, e^{0.182\, V \cos(\theta + 90^\circ)}$ \\[6pt]
+\hline
+Right (flat slope) &
+$R_{\text{right}} =
+0.969\, R_0\, K_s\, e^{0.182\, V \cos(\theta - 90^\circ)}$ \\[6pt]
+\hline
+Wind (favourable direction) &
+$R_{\text{wind}} =
+0.969\, R_0\, K_s\, e^{3.533(\tan(\phi \cos \theta))^{1.2} + 0.182\, V},
+\quad
+\text{if } \theta \in [0^\circ, 90^\circ] \cup [270^\circ, 360^\circ]$ \\[6pt]
+\hline
+Wind (opposing direction) &
+$R_{\text{wind}} =
+0.969\, R_0\, K_s\, e^{-3.533(\tan(\phi \cos(180^\circ - \theta)))^{1.2} + 0.182\, V},
+\quad
+\text{if } 90^\circ < \theta < 270^\circ$ \\[6pt]
+\hline
+\end{tabular}
+\end{table}
 \section{Data and Methods}\label{sec:Data and Methods}
 
 \subsection{Datasets}
-A number of datasets is used in the fire spread algorithm.
+Several datasets are used in the fire spread algorithm.
 
-From the Eurpean Centre ER5 analysis dataset wind velocity (u,v) and temperature data was collected for the month of August. The data was 
+From the Eurpean Centre ER5 analysis dataset wind velocity (u,v) and temperature data was collected for the month of August. The reanalysis data was too coarse grained for the so 
 
 From Opentopology, elevation data was collected from the NASA Shuttle Radar Topography Mission (SRTM). The 
 
 \subsection{Algorithm}
-In the Forest fire Model each cell can be in one of four states:
+The Forest fire Model consists of a 300 by 300 grid of cells, with each cell representing a section of forest. The grid represents an area of around $41 km^2$ around the Kingston area. 
+
+Each cell can be in one of four states:
 
 \begin{table}[h!]
 \centering
@@ -122,47 +182,29 @@ This section of forest contains fuel and it is now burning \\
 This section of forest has run out of fuel and is no longer burning\\
 \hline
 
-
 \end{tabular}
 \end{table}
+
+The algorithm for updating each cell after some time step $\delta t$ is as follows:
+
+For each cell in the grid we first check if it is in the burning state. If it is, we then iterate over each neighbouring cell and calculate how fast the fire is spreading in that direction. The formula used is: \ref{tab:spread-rates}
 
 \begin{table}[h!]
 \centering
-\caption{Spread rate formulas for different slope and wind directions.}
-\begin{tabular}{|l|l|}
+\caption{Neighbouring cells relative to the central cell $(i, j)$.}
+\begin{tabular}{|c|c|c|}
 \hline
-\textbf{Condition} & \textbf{Spread Rate Formula} \\
-\hline
-Uphill &
-$R_{\text{uphill}} =
-0.969\, R_0\, K_s\, e^{3.533(\tan \phi)^{1.2} + 0.182\, V \cos \theta}$ \\[6pt]
-\hline
-Downhill &
-$R_{\text{downhill}} =
-0.969\, R_0\, K_s\, e^{-3.533(\tan \phi)^{1.2} + 0.182\, V \cos(180^\circ - \theta)}$ \\[6pt]
-\hline
-Left (flat slope) &
-$R_{\text{left}} =
-0.969\, R_0\, K_s\, e^{0.182\, V \cos(\theta + 90^\circ)}$ \\[6pt]
-\hline
-Right (flat slope) &
-$R_{\text{right}} =
-0.969\, R_0\, K_s\, e^{0.182\, V \cos(\theta - 90^\circ)}$ \\[6pt]
-\hline
-Wind (favorable direction) &
-$R_{\text{wind}} =
-0.969\, R_0\, K_s\, e^{3.533(\tan(\phi \cos \theta))^{1.2} + 0.182\, V},
-\quad
-\text{if } \theta \in [0^\circ, 90^\circ] \cup [270^\circ, 360^\circ]$ \\[6pt]
-\hline
-Wind (opposing direction) &
-$R_{\text{wind}} =
-0.969\, R_0\, K_s\, e^{-3.533(\tan(\phi \cos(180^\circ - \theta)))^{1.2} + 0.182\, V},
-\quad
-\text{if } 90^\circ < \theta < 270^\circ$ \\[6pt]
-\hline
+$(i-1, j+1)$ & $(i, j+1)$ & $(i+1, j+1)$ \\ \hline
+$(i-1, j)$   & $(i, j)$   & $(i+1, j)$   \\ \hline
+$(i-1, j-1)$ & $(i, j-1)$ & $(i+1, j-1)$ \\ \hline
 \end{tabular}
 \end{table}
+
+Each section of forest, roughly corresponds to a $90m^2$ area. So, given the time elapsed from the last update, $\Delta t$, we can calculate how far the fire has spread $\text{Distance} = \text{Spread Rate } * \Delta t$. If the neighbouring cell is unburnt, and the fire has spread far enough to reach that cell then we update the neighbouring cell to be burning. After enough time has elapsed a burning cell can be out of fuel, it then transitions to the burnt out state. \\
+ 
+Cells at the edge of the grid do not have 8 neighbours. To remedy this, extra cells are added around the perimeter of the grid. The extra cells are only used to update cells at the edge of the grid and do not factor into the simulation.
+
+
 
 \begin{table}[h!]
 \centering
@@ -185,13 +227,49 @@ Bottom-right & (+1, +1) & 135° (Southeast) \\
 
 \subsection{Implementation}
 
-\section{Results}\label{sec:Results}
+The algorithm was implemented in python and used the pygame and pygame_gui libraries to visualize the results. \\
 
+To initialize the grid, a stencil was created using a terrain map. Non-flammable features were masked using an image processing program called GIMP. The image was scaled to an appropriate size to create a 300 by 300 grid.  \\\\
+\begin{figure}[h]
+\caption{Stencil used to mask non-flammable features}
+\centering
+\includegraphics{stencil_3.png}
+\end{figure}
+
+The topology data was imported into the project from a '.tif' image. Some pre-processing had to be done to map the coordinates of the elevation data to the grid.
+
+
+\section{Results}\label{sec:Results}
+The simulation was run for 2-weeks simulation time. At relevant timestamps a screenshot taken to be compared satellite images of how the fire really spread.\\\\
+
+
+
+
+
+\begin{figure}[h]
+\caption{Satellite Images Showing the Progression of the  fire from August 3rd to 17th}
+\centering
+\includegraphics[width=0.7\textwidth]{CBN_Wildfire_Aug03-17_2025_Visible-1024x791.jpg}
+\end{figure}
+
+\begin{figure}[h]
+\caption{Results of Simulation Overlaid}
+\centering
+\includegraphics[width=0.7\textwidth]{results.png}
+\end{figure}
 \section{Limitations}
+There are a number of limitations in the implementation of this model.
+
+The Wang Zhengfei model depends on a number of constants. For example, the initial spread rate $R_0$ depends on moisture levels and the type of fuel being burned. $R_0$ usually determined experimentally by burning material in the absence of wind. Another important variable is the fuel configuration constant which depends on the density and type of vegetation constant. Unfortunately  
+
+Another limitation is that this model does not take into account fire fighting efforts. During real forest fires, there are attempts to suppress the fire at the front. For example, during the Kingston fire, multiple water bombers were employed. In future work this could be accounted for by artificially lowering the spread rate of the fire across certain cells were fire suppression methods were used. 
+
 
 \section{Conclusion}\label{sec:Conclusion}
+Despite simplifications made to the Wang Zhengfei model, the Cellular PErformed performed well at predicting how the fire spread in the short term. Comparing the output of the simulations to the satellite images of the fire  
 
 \section{github}
+https://github.com/mkp302/cellular\_automata
 
 \footnotesize\setlength{\itemsep}{0ex}
 \bibliography{biblio}

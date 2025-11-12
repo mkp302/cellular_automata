@@ -18,28 +18,28 @@ def draw_wind_arrow(surface, center, angle, length=100, color=(0, 0, 0)):
 
     x, y = center
     end_x = x + math.cos(angle) * length
-    end_y = y + math.sin(angle) * length
+    end_y =  y - math.sin(angle) * length
     pygame.draw.line(surface, color, (x, y), (end_x, end_y), 4)
-    # arrowhead
+
     left = (
         end_x - 10 * math.cos(angle - math.pi / 6),
-        end_y - 10 * math.sin(angle - math.pi / 6),
+        end_y + 10 * math.sin(angle - math.pi / 6),
     )
     right = (
         end_x - 10 * math.cos(angle + math.pi / 6),
-        end_y - 10 * math.sin(angle + math.pi / 6),
+        end_y + 10 * math.sin(angle + math.pi / 6),
     )
     pygame.draw.polygon(surface, color, [(end_x, end_y), left, right])
 
 
 class Sidebar:
 
-    def __init__(self, context, enviroment, grid):
+    def __init__(self, context, environment, grid):
         self.context = context
         self.grid = grid
         self.manager = self.context.ui_manager
         self.compass_img = pygame.image.load("assets/compass.png").convert_alpha()
-        self.enviroment = enviroment
+        self.environment = environment
         self.dragging_wind = False
         self.create_elements()
 
@@ -75,13 +75,20 @@ class Sidebar:
         y += sidebar_rect.width + y_padding
         input_width = sidebar_width // 2
         label_height = 30
+        self.time_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((0, 0), (400, label_height)),
+            text=f"{self.context.sim_time.strftime("%B %d, %Y %I:%M %p")}",
+            manager=self.manager,
+        )
+
         self.wind_x_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((x, y), (40, label_height)),
             text="X:",
             manager=self.manager,
         )
-        self.wind_x_input = pygame_gui.elements.UITextEntryLine(
+        self.wind_x_input = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((x + 45, y), (input_width - 45, label_height)),
+            text=f"{self.environment.wind_speed[0]}",
             manager=self.manager,
         )
 
@@ -90,10 +97,11 @@ class Sidebar:
             text="Y:",
             manager=self.manager,
         )
-        self.wind_y_input = pygame_gui.elements.UITextEntryLine(
+        self.wind_y_input = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(
                 (x + input_width + 45, y), (input_width - 45, label_height)
             ),
+            text=f"{self.environment.wind_speed[0]}",
             manager=self.manager,
         )
         y += label_height + y_padding
@@ -102,22 +110,38 @@ class Sidebar:
             text="Temp:",
             manager=self.manager,
         )
-        self.temp_input = pygame_gui.elements.UITextEntryLine(
+        self.temp_input = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((x + 85, y), (sidebar_width - 85, label_height)),
+            text=f"{self.environment.temperature} °C",
             manager=self.manager,
         )
 
         y += label_height + y_padding
         self.humid_label = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect((x, y), (100, label_height)),
-            text="Humidity %:",
+            text="Dew Point :",
             manager=self.manager,
         )
-        self.humid_input = pygame_gui.elements.UITextEntryLine(
+        self.humid_input = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect(
+                (x + 105, y), (sidebar_width - 105, label_height)
+            ),
+            text = f"{self.environment.dew_point}",
+            manager=self.manager,
+        )
+        y += label_height + y_padding
+        self.speed_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((x, y), (100, label_height)),
+            text="speed:",
+            manager=self.manager,
+        )
+        self.speed_input = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect(
                 (x + 105, y), (sidebar_width - 105, label_height)
             ),
             manager=self.manager,
+            start_value=0,
+            value_range=(0, 100),
         )
 
         y += label_height + y_padding
@@ -128,9 +152,9 @@ class Sidebar:
         )
 
         y += label_height + y_padding
-        self.randomize_button = pygame_gui.elements.UIButton(
+        self.reset_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((x, y), (sidebar_width, 40)),
-            text="Randomize",
+            text="Reset",
             manager=self.manager,
         )
 
@@ -142,25 +166,26 @@ class Sidebar:
         sidebar_rect = pygame.Rect(
             0, sidebar_top, sidebar_width, window_size[1] - sidebar_top
         )
-
         self.manager.draw_ui(self.context.screen)
         self.manager.update(10)
         self.context.screen.blit(self.compass, (0, self.compass_rect.top))
         draw_wind_arrow(
             self.context.screen,
             self.compass_rect.center,
-            self.enviroment.wind_angle,
+            self.environment.wind_angle,
         )
+    def update(self):
+        self.time_label.set_text(f"{self.context.sim_time.strftime("%B %d, %Y %I:%M %p")}")
+        self.wind_x_input.set_text(f"{self.environment.wind_speed[0]:.2f}")
+        self.wind_y_input.set_text(f"{self.environment.wind_speed[1]:.2f}")
+        self.temp_input.set_text(f"{self.environment.temperature:.2f} °C")
+        self.humid_input.set_text(f"{self.environment.dew_point:.2f} °C")
 
     def handle(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.compass_rect.collidepoint(event.pos):
-                self.dragging_wind = True
-        elif event.type == pygame.MOUSEBUTTONUP:
-            self.dragging_wind = False
+     
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
-            if event.ui_element == self.randomize_button:
-                self.grid.randomize()
+            if event.ui_element == self.reset_button:
+                self.grid.reset()
             if event.ui_element == self.play_button:
                 if self.context.running == False:
                     self.play_button.set_text("Pause")
@@ -168,11 +193,16 @@ class Sidebar:
                 else:
                     self.play_button.set_text("Play")
                     self.context.running = False
-
-        if self.dragging_wind:
-            pos = pygame.mouse.get_pos()
-            self.enviroment.wind_angle, self.enviroment.wind_speed = (
-                update_wind_from_mouse(pos, self.compass_rect.center)
-            )
-            self.wind_x_input.set_text(f"{self.enviroment.wind_speed[0]:.2f}")
-            self.wind_y_input.set_text(f"{ self.enviroment.wind_speed[1]:.2f}")
+            if event.type == pygame_gui.UI_HORIZONTAL_SLIDER_MOVED:
+                if event.ui_element == self.speed_input:
+                    try:
+                        speed = event.value
+                        if speed >= 100:
+                            self.context.speed = 1
+                        elif speed <= 0:
+                            self.context.speed = 100
+                        else:
+                            self.context.speed = 100 - speed
+                    except:
+                        ...
+    

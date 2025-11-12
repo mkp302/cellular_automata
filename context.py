@@ -1,9 +1,10 @@
 from config import Config
 from scenes.scene_manager import SceneManager
 from scenes.simulation.simulation_scene import SimulationScene
+
 import pygame
 import pygame_gui
-import xarray
+from datetime import datetime
 
 
 class Context:
@@ -19,9 +20,11 @@ class Context:
             "cell_bg": (36, 107, 31),
             "grid-lines": (209, 203, 69),
         }
+        self.sim_time = datetime(2025, 8, 3, 9, 0)
         self.screen = pygame.display.set_mode(self.window_size)
         self.ui_manager = pygame_gui.UIManager(self.screen.get_size())
         sim_scene = SimulationScene(self)
         self.scene_manager = SceneManager()
         self.scene_manager.push(sim_scene)
         self.grid = None
+        self.speed = 20
